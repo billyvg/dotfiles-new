@@ -1,2 +1,39 @@
 .DS_Store
 *.bak
+
+# --- never commit credentials -------------------------------------------
+# This repo is meant to be public/shareable and is cloned onto dev boxes by
+# `coder dotfiles`. Machine-specific secrets belong in the untracked
+# ~/.zshrc.local and ~/.gitconfig.local that install.sh creates, never here.
+*.local
+.env
+.env.*
+.netrc
+.npmrc
+.pypirc
+.sentryrc
+.secrets
+secrets.*
+*credentials*
+*.secret
+
+# keys & certs
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.asc
+*.gpg
+id_rsa*
+id_ed25519*
+id_ecdsa*
+id_dsa*
+
+# tool state that tends to carry tokens
+**/.ssh/
+**/.gnupg/
+**/.aws/
+**/gh/hosts.yml
+**/docker/config.json

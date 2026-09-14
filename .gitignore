@@ -12,6 +12,10 @@
 .npmrc
 .pypirc
 .sentryrc
+# ...except this one, which is deliberately non-secret: it holds config plus
+# op:// references only. Its contents are reviewed; the rule above still stops
+# a real secret-bearing .sentryrc from being added anywhere else.
+!home/.sentryrc
 .secrets
 secrets.*
 *credentials*

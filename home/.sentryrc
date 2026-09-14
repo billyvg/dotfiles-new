@@ -1,0 +1,97 @@
+# ~/.sentryrc — Sentry development environment. Sourced from .zshrc.
+#
+# Everything here is non-secret and committed. The real secrets are NOT in this
+# file: they're fetched from 1Password on demand (macOS), or injected as
+# environment variables by the Coder template (dev boxes). See the bottom.
+
+export PROJECTS="$HOME/code"
+alias scd="cd ${PROJECTS}/sentry"
+alias gscd="cd ${PROJECTS}/getsentry"
+alias frontend="cd ${PROJECTS}/sentry/src/sentry/static/sentry/app"
+
+# --- devserver / test config ------------------------------------------------
+export DB=postgres
+export PG_VERSION=14
+export SENTRY_LIGHT_BUILD=1
+export SENTRY_SOUTH_TESTS_MIGRATE=0
+export SENTRY_SKIP_FORCE_PATCH=1
+export SENTRY_INSTRUMENTATION=1
+# export SENTRY_POST_MERGE_AUTO_UPDATE=1
+export SENTRY_DEVENV_FRONTEND_ONLY=1
+export SENTRY_UI_HOT_RELOAD=1
+
+# Client-side DSNs. These are public by design -- they ship in the browser
+# bundle -- so they're safe to commit.
+export SENTRY_SPA_DSN=https://REDACTED@REDACTED.ingest.sentry.io/REDACTED
+export SENTRY_REPLAY_DEV_DSN=https://REDACTED@REDACTED.ingest.sentry.io/REDACTED
+
+# --- GeoIP ------------------------------------------------------------------
+# Resolved against the brew prefix rather than hardcoded /usr/local, which is
+# the Intel path and does not exist on Apple Silicon. Only exported if present.
+if (( ${+commands[brew]} )); then
+  _geoip_dir="$(brew --prefix)/var/GeoIP"
+  [[ -f "$_geoip_dir/GeoIPcity.dat" ]]        && export GEOIP_PATH="$_geoip_dir/GeoIPcity.dat"
+  [[ -f "$_geoip_dir/GeoLite2-City.mmdb" ]]   && export GEOIP_PATH_MMDB="$_geoip_dir/GeoLite2-City.mmdb"
+  unset _geoip_dir
+fi
+
+# --- pyenv ------------------------------------------------------------------
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+# --no-rehash: `pyenv rehash` cost ~140ms per shell; run it by hand after
+# installing a new python or a package with an entry point.
+# _cached_init comes from .zshrc; fall back to a plain eval if this file is
+# sourced on its own.
+if (( ${+commands[pyenv]} )); then
+  if (( ${+functions[_cached_init]} )); then
+    _cached_init pyenv pyenv init - --no-rehash zsh
+  else
+    eval "$(pyenv init - --no-rehash zsh)"
+  fi
+fi
+
+# ---------------------------------------------------------------------------
+# Secrets
+# ---------------------------------------------------------------------------
+# On a Coder dev box the template injects these as real environment variables,
+# so there is nothing to do.
+if [[ -n "$CODER_WORKSPACE_NAME" || -n "$CODER_AGENT_URL" ]]; then
+  return 0
+fi
+
+# On macOS they live in 1Password. Nothing is fetched at shell startup: each
+# `op read` is a round trip plus a possible unlock prompt, which would make
+# every new terminal slow. Instead they're resolved on first use and cached
+# for the life of the shell.
+: "${OP_VAULT:=Private}"
+
+# _op_secret <VAR_NAME> <op://reference>
+_op_secret() {
+  local var="$1" ref="$2"
+  [[ -n "${(P)var}" ]] && return 0          # already resolved this shell
+  (( ${+commands[op]} )) || return 1        # no 1Password CLI -> leave unset
+  local val
+  val="$(op read --no-newline "$ref" 2>/dev/null)" || return 1
+  [[ -n "$val" ]] || return 1
+  export "$var=$val"
+}
+
+# Only affects GitHub API rate limits, so a failure here is not worth a warning.
+brew() {
+  _op_secret HOMEBREW_GITHUB_API_TOKEN "op://${OP_VAULT}/Homebrew GitHub Token/credential"
+  command brew "$@"
+}
+
+# Run before seer / gitlab / github-app work. Safe to call repeatedly.
+sentry-secrets() {
+  local failed=()
+  _op_secret GITLAB_API_TOKEN        "op://${OP_VAULT}/GitLab API Token/credential"        || failed+=(GITLAB_API_TOKEN)
+  _op_secret SEER_GITHUB_PRIVATE_KEY "op://${OP_VAULT}/Seer GitHub App/private key"        || failed+=(SEER_GITHUB_PRIVATE_KEY)
+  _op_secret WEBHOOK_PROXY_URL       "op://${OP_VAULT}/Sentry Webhook Proxy/url"           || failed+=(WEBHOOK_PROXY_URL)
+
+  if (( ${#failed} )); then
+    print -u2 "sentry-secrets: could not resolve: ${failed[*]}"
+    (( ${+commands[op]} )) || print -u2 "  (1Password CLI not installed: brew install 1password-cli)"
+    return 1
+  fi
+}

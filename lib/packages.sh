@@ -32,8 +32,11 @@ install_apt_packages() {
   fi
 
   info "installing ${#missing[@]} apt package(s): ${missing[*]}"
-  $SUDO apt-get update -qq
-  DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y -qq --no-install-recommends "${missing[@]}"
+  $SUDO apt-get update -qq || { warn "apt-get update failed"; return 1; }
+  if ! DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y -qq \
+       --no-install-recommends "${missing[@]}"; then
+    return 1
+  fi
   ok "apt packages installed"
 }
 
@@ -74,16 +77,21 @@ install_homebrew() {
   # prefix. If we can't sudo, install into ~/.linuxbrew instead of failing.
   if is_linux && ! can_sudo; then
     info "installing homebrew to \$HOME (no sudo available)"
-    git clone --depth=1 https://github.com/Homebrew/brew "$HOME/.linuxbrew/Homebrew"
+    git clone --depth=1 https://github.com/Homebrew/brew "$HOME/.linuxbrew/Homebrew" || return 1
     mkdir -p "$HOME/.linuxbrew/bin"
     ln -sf "$HOME/.linuxbrew/Homebrew/bin/brew" "$HOME/.linuxbrew/bin/brew"
   else
     info "installing homebrew"
-    NONINTERACTIVE=1 /bin/bash -c \
-      "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    local installer
+    installer="$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" \
+      || { warn "could not fetch the homebrew installer"; return 1; }
+    NONINTERACTIVE=1 /bin/bash -c "$installer" || return 1
   fi
 
-  load_brew || die "homebrew install finished but brew is still not on PATH"
+  if ! load_brew; then
+    warn "homebrew install finished but brew is not on PATH"
+    return 1
+  fi
   ok "homebrew installed at $(brew --prefix)"
 }
 

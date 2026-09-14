@@ -36,9 +36,10 @@ done
 # ---------------------------------------------------------------------------
 if [[ $DO_PACKAGES -eq 1 ]]; then
   info "detected OS: $OS$(is_coder && printf ' (coder workspace)')"
-  install_apt_packages
-  install_homebrew
-  run_brew_bundle
+  # Each phase is soft: a package failure must not stop us from linking configs.
+  soft "apt packages" install_apt_packages
+  soft "homebrew"     install_homebrew
+  soft "brew bundle"  run_brew_bundle
 else
   skip "skipping package installation"
 fi

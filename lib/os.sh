@@ -42,6 +42,22 @@ has() { command -v "$1" >/dev/null 2>&1; }
 # can't wedge forever on a step that decides to prompt (headless nvim and tpm
 # are the usual suspects). Falls back to running bare where timeout(1) is
 # absent, e.g. a stock macOS without coreutils.
+# Run a phase that must never abort the whole install.
+#
+# Linking configs is what dotfiles are *for*; installing packages is a
+# convenience on top. A package manager that fails (no network, a proxy, an
+# unsupported arch) should degrade the run, not leave you with a workspace that
+# has no shell config at all.
+# usage: soft <label> <cmd> [args...]
+soft() {
+  local label="$1"; shift
+  if "$@"; then
+    return 0
+  fi
+  warn "$label failed — continuing without it"
+  return 0
+}
+
 # usage: with_timeout <seconds> <cmd> [args...]
 with_timeout() {
   local secs="$1"; shift

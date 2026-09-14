@@ -15,6 +15,7 @@ brew "viu"                          # terminal image viewer
 brew "node"
 brew "coreutils"                    # gls, so `ls --color` works like Linux
 brew "tailscale"
+brew "1password-cli"
 
 # Casks
 cask "ghostty"

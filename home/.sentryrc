@@ -20,10 +20,12 @@ export SENTRY_INSTRUMENTATION=1
 export SENTRY_DEVENV_FRONTEND_ONLY=1
 export SENTRY_UI_HOT_RELOAD=1
 
-# Client-side DSNs. These are public by design -- they ship in the browser
-# bundle -- so they're safe to commit.
-export SENTRY_SPA_DSN=https://REDACTED@REDACTED.ingest.sentry.io/REDACTED
-export SENTRY_REPLAY_DEV_DSN=https://REDACTED@REDACTED.ingest.sentry.io/REDACTED
+# Client-side DSNs are deliberately NOT committed. A DSN grants write access
+# to its project, and these point at an internal Sentry org, so publishing
+# them would leave an open event-ingest endpoint in a public repo.
+# Set these in ~/.zshrc.local instead:
+#   export SENTRY_SPA_DSN=...
+#   export SENTRY_REPLAY_DEV_DSN=...
 
 # --- GeoIP ------------------------------------------------------------------
 # Resolved against the brew prefix rather than hardcoded /usr/local, which is

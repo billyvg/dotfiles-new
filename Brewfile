@@ -13,5 +13,4 @@ brew "ripgrep"
 brew "fd"
 brew "bat"
 brew "gh"
-brew "volta"                 # node toolchain manager
 brew "scmpuff"               # no apt package

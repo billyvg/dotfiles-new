@@ -182,12 +182,6 @@ export MANPAGER='nvim +Man!'
 # export BAT_THEME='Monokai Extended'
 export BAT_THEME='Catppuccin Frappe'
 
-if [[ -d "$HOME/.volta" ]]; then
-  export VOLTA_HOME="$HOME/.volta"
-  export VOLTA_FEATURE_PNPM=1
-  export PATH="$VOLTA_HOME/bin:$PATH"
-fi
-
 [[ -f ~/.sentryrc ]] && source ~/.sentryrc
 
 # Load plugins.

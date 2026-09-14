@@ -14,3 +14,5 @@ brew "fd"
 brew "bat"
 brew "gh"
 brew "scmpuff"               # no apt package
+brew "herdr"
+brew "agent-browser"

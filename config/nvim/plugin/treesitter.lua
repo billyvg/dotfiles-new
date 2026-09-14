@@ -43,7 +43,8 @@ if #ensure_installed > 0 then
     vim.api.nvim_create_autocmd({ "FileType" }, {
       pattern = filetypes,
       callback = function(event)
-        vim.treesitter.start(event.buf, parser)
+        -- Parsers install asynchronously, so one may not exist yet on first run
+        pcall(vim.treesitter.start, event.buf, parser)
       end,
     })
   end

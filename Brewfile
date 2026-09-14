@@ -7,6 +7,7 @@
 
 brew "neovim"                # apt's nvim is far too old for vim.pack (>= 0.12)
 brew "git-delta"             # git pager; no apt package
+brew "difftastic"            # structural differ; gitconfig sets diff.external=difft
 brew "fzf"
 brew "ripgrep"
 brew "fd"

@@ -64,6 +64,53 @@ and sources `~/.tmux-macos.conf` or `~/.tmux-linux.conf`.
 
 Load order for zsh is: **shared → `.os` → `.local`**. Later wins.
 
+## Secrets
+
+No secret values live in this repo. `home/.sentryrc` is committed and holds
+only non-secret config; the three real secrets are resolved at runtime, and
+where they come from depends on the machine.
+
+### macOS — 1Password
+
+Needs the CLI, plus *Developer → Integrate with 1Password CLI* enabled in the
+desktop app so unlocking uses Touch ID:
+
+```bash
+brew install 1password-cli
+```
+
+Create these items in your `Private` vault (override with `OP_VAULT`):
+
+| Item | Field | Env var |
+|---|---|---|
+| `Homebrew GitHub Token` | `credential` | `HOMEBREW_GITHUB_API_TOKEN` |
+| `GitLab API Token` | `credential` | `GITLAB_API_TOKEN` |
+| `Seer GitHub App` | `private key` | `SEER_GITHUB_PRIVATE_KEY` |
+| `Sentry Webhook Proxy` | `url` | `WEBHOOK_PROXY_URL` |
+
+Nothing is fetched at shell startup — each `op read` is a round trip plus a
+possible unlock prompt, which would make every new terminal slow. Instead:
+
+- `brew` resolves its token on first use (it only affects API rate limits)
+- run **`sentry-secrets`** before seer / gitlab / github-app work; it resolves
+  the rest and caches them for the life of the shell
+
+### Coder dev boxes — template environment variables
+
+`.sentryrc` detects `$CODER_WORKSPACE_NAME` and returns early, so no 1Password
+client is needed on the box. Have the template inject whichever of these the
+workspace actually needs:
+
+```
+GITLAB_API_TOKEN
+SEER_GITHUB_PRIVATE_KEY
+WEBHOOK_PROXY_URL
+```
+
+A 1Password service account would work too, but its token is itself a secret
+that has to reach the box somehow — usually a Coder env var — so it adds a
+moving part without removing the bootstrap problem.
+
 ## Machine-specific config and secrets
 
 Two untracked files, created empty by `install.sh`:

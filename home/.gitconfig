@@ -1,6 +1,6 @@
 # Shared git config. Machine/OS specifics live in the two includes below:
 #   ~/.gitconfig.os    -> symlink to .gitconfig.darwin or .gitconfig.linux
-#   ~/.gitconfig.local -> untracked, per-machine (work email, signing keys)
+#   ~/.gitconfig.local -> untracked, per-machine (your email, signing keys)
 [include]
   path = ~/.gitconfig.os
 
@@ -48,7 +48,7 @@
   ; pager = diffr | less -R
 
 [merge]
-  ff = only
+	ff = false
   # I pretty much never mean to do a real merge, since I use a rebase workflow.
   # Note: this global option applies to all merges, including those done during a git pull
   # https://git-scm.com/docs/git-config#git-config-mergeff
@@ -101,13 +101,14 @@
   submodule = log
   compactionHeuristic = 1
   colorMoved = default
+  external = difft
 
 
 [status]
   submoduleSummary = true
 
 [pull]
-  rebase = merges
+	rebase = true
 	default = current
 
 [pager]
@@ -142,4 +143,3 @@
 	defaultBranch = main
 [user]
 	name = Billy Vong
-	email = billyvg@users.noreply.github.com

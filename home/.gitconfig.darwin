@@ -2,3 +2,13 @@
 
 [credential]
   helper = osxkeychain
+
+# Let gh handle GitHub auth. Resolved via PATH rather than a hardcoded
+# /opt/homebrew path so this also works on an Intel mac.
+[credential "https://github.com"]
+  helper =
+  helper = !gh auth git-credential
+
+[credential "https://gist.github.com"]
+  helper =
+  helper = !gh auth git-credential

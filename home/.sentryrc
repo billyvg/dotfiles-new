@@ -63,7 +63,7 @@ fi
 # `op read` is a round trip plus a possible unlock prompt, which would make
 # every new terminal slow. Instead they're resolved on first use and cached
 # for the life of the shell.
-: "${OP_VAULT:=Private}"
+: "${OP_VAULT:=Employee}"
 
 # _op_secret <VAR_NAME> <op://reference>
 _op_secret() {
@@ -78,16 +78,16 @@ _op_secret() {
 
 # Only affects GitHub API rate limits, so a failure here is not worth a warning.
 brew() {
-  _op_secret HOMEBREW_GITHUB_API_TOKEN "op://${OP_VAULT}/Homebrew GitHub Token/credential"
+  _op_secret HOMEBREW_GITHUB_API_TOKEN "op://${OP_VAULT}/HOMEBREW_GITHUB_API_TOKEN/credential"
   command brew "$@"
 }
 
 # Run before seer / gitlab / github-app work. Safe to call repeatedly.
 sentry-secrets() {
   local failed=()
-  _op_secret GITLAB_API_TOKEN        "op://${OP_VAULT}/GitLab API Token/credential"        || failed+=(GITLAB_API_TOKEN)
-  _op_secret SEER_GITHUB_PRIVATE_KEY "op://${OP_VAULT}/Seer GitHub App/private key"        || failed+=(SEER_GITHUB_PRIVATE_KEY)
-  _op_secret WEBHOOK_PROXY_URL       "op://${OP_VAULT}/Sentry Webhook Proxy/url"           || failed+=(WEBHOOK_PROXY_URL)
+  _op_secret GITLAB_API_TOKEN        "op://${OP_VAULT}/GITLAB_API_TOKEN/credential"        || failed+=(GITLAB_API_TOKEN)
+  _op_secret SEER_GITHUB_PRIVATE_KEY "op://${OP_VAULT}/SEER_GITHUB_PRIVATE_KEY/private key"        || failed+=(SEER_GITHUB_PRIVATE_KEY)
+  _op_secret WEBHOOK_PROXY_URL       "op://${OP_VAULT}/WEBHOOK_PROXY_URL/url"           || failed+=(WEBHOOK_PROXY_URL)
 
   if (( ${#failed} )); then
     print -u2 "sentry-secrets: could not resolve: ${failed[*]}"

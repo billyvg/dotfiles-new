@@ -1,0 +1,6 @@
+# Linux-only brew formulae.
+#
+# Keep this list short on purpose — see the note at the top of Brewfile.
+# Prefer apt-packages.txt unless apt's version is unusably old or absent.
+
+# (intentionally empty for now — the shared Brewfile covers the Linux needs)

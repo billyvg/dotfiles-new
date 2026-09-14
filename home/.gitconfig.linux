@@ -1,0 +1,17 @@
+# Linux-specific git config. Symlinked to ~/.gitconfig.os by install.sh.
+#
+# On a Coder workspace the usual auth path is the `gh` CLI (it registers itself
+# as a credential helper for github.com), or Coder's own injected git token.
+# The cache helper below is the fallback so you aren't retyping a PAT all day.
+
+[credential]
+  helper = cache --timeout=86400
+
+[credential "https://github.com"]
+  helper =
+  helper = !type gh >/dev/null 2>&1 && gh auth git-credential
+
+# Coder injects an askpass helper for its own git integration; honour it when
+# it's present rather than blocking on a TTY prompt.
+[core]
+  askPass =

@@ -1,0 +1,33 @@
+# Linux base packages, installed via apt before Homebrew.
+# One package per line; `#` comments and blank lines are ignored.
+
+# --- Homebrew prerequisites ---
+build-essential
+procps
+curl
+file
+git
+
+# --- shell ---
+zsh
+tmux
+direnv
+
+# --- nvim build/runtime deps ---
+# treesitter parsers compile on install; blink.cmp builds a Rust binary.
+cmake
+pkg-config
+unzip
+python3
+python3-pip
+python3-venv
+
+# --- general ---
+wget
+jq
+htop
+tree
+xclip
+less
+ca-certificates
+gnupg

@@ -1,0 +1,36 @@
+# macOS-only. Casks, Mac App Store apps, and formulae that don't exist or don't
+# make sense on Linux.
+
+cask_args appdir: "/Applications"
+
+tap "homebrew/bundle"
+
+brew "git"
+brew "wget"
+brew "tmux"
+brew "reattach-to-user-namespace"   # macOS clipboard access from tmux
+brew "tree-sitter", args: ["HEAD"]
+brew "thefuck"
+brew "viu"                          # terminal image viewer
+brew "node"
+brew "coreutils"                    # gls, so `ls --color` works like Linux
+brew "tailscale"
+
+# Casks
+cask "ghostty"
+cask "obsidian"
+cask "discord"
+cask "font-fira-code-nerd-font"
+cask "1password"
+cask "firefox@developer-edition"
+cask "google-chrome"
+cask "slack"
+cask "chromedriver"
+cask "visual-studio-code"
+cask "whatsapp@beta"
+
+### Mac App Store ###
+brew "mas"
+mas "WireGuard", id: 1451685025
+
+# gh extensions aren't expressible in a Brewfile; install.sh handles them.

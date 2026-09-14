@@ -1,0 +1,4 @@
+# macOS-specific git config. Symlinked to ~/.gitconfig.os by install.sh.
+
+[credential]
+  helper = osxkeychain

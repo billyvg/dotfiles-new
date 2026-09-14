@@ -1,0 +1,26 @@
+# macOS-specific zsh config. Symlinked to ~/.zshrc.os by install.sh.
+
+# BSD ls uses -G; GNU coreutils (if installed via brew) uses --color.
+if (( ${+commands[gls]} )); then
+  alias ls="gls --color=auto"
+else
+  alias ls="ls -G"
+fi
+
+alias o="open"
+
+# gettext, if brewed
+[[ -d "$(brew --prefix 2>/dev/null)/opt/gettext/bin" ]] && \
+  export PATH="$(brew --prefix)/opt/gettext/bin:$PATH"
+
+# Google Cloud SDK — resolve dynamically rather than hardcoding a home dir.
+for _gcloud in "$HOME/google-cloud-sdk" "$(brew --prefix 2>/dev/null)/share/google-cloud-sdk"; do
+  if [[ -f "$_gcloud/path.zsh.inc" ]]; then
+    source "$_gcloud/path.zsh.inc"
+    [[ -f "$_gcloud/completion.zsh.inc" ]] && source "$_gcloud/completion.zsh.inc"
+    break
+  fi
+done
+unset _gcloud
+
+export SLACK_DEVELOPER_MENU=true

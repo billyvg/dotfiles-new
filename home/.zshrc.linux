@@ -1,0 +1,26 @@
+# Linux-specific zsh config. Symlinked to ~/.zshrc.os by install.sh.
+# Targets Coder dev boxes and other headless Linux hosts.
+
+alias ls="ls --color=auto"
+alias o="xdg-open"
+
+# Clipboard: prefer OSC 52 over SSH, fall back to xclip/wl-copy when there's a
+# display. Lets `pbcopy`-style muscle memory work on a headless box.
+if (( ${+commands[wl-copy]} )) && [[ -n "$WAYLAND_DISPLAY" ]]; then
+  alias pbcopy="wl-copy"
+  alias pbpaste="wl-paste"
+elif (( ${+commands[xclip]} )) && [[ -n "$DISPLAY" ]]; then
+  alias pbcopy="xclip -selection clipboard"
+  alias pbpaste="xclip -selection clipboard -o"
+else
+  # OSC 52 — pushes to the *local* terminal's clipboard over SSH.
+  pbcopy() { printf "\033]52;c;%s\a" "$(base64 | tr -d '\n')"; }
+fi
+
+# Coder workspaces expose the workspace name; surface it so the p10k prompt and
+# tmux status make it obvious which box you're on.
+[[ -n "$CODER_WORKSPACE_NAME" ]] && export CODER_WORKSPACE_NAME
+
+# systemd-less containers sometimes leave this unset, which upsets some tools.
+[[ -z "$XDG_RUNTIME_DIR" && -d "/run/user/$(id -u)" ]] && \
+  export XDG_RUNTIME_DIR="/run/user/$(id -u)"

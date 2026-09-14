@@ -1,0 +1,145 @@
+# Shared git config. Machine/OS specifics live in the two includes below:
+#   ~/.gitconfig.os    -> symlink to .gitconfig.darwin or .gitconfig.linux
+#   ~/.gitconfig.local -> untracked, per-machine (work email, signing keys)
+[include]
+  path = ~/.gitconfig.os
+
+[include]
+  path = ~/.gitconfig.local
+
+[alias]
+  co = checkout
+  cp = cherry-pick
+  ci = commit
+  st = status
+  up = pull
+  p = push
+  s = status -s
+  b = branch
+  sclone = clone --depth=1
+  df = diff --color --color-words --abbrev
+  lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --
+  recent = for-each-ref --count=20 --sort=-committerdate refs/heads/ --format="%(refname:short)"
+  brv = !git b | cut -c3- | xargs git commit-info --color=always | sort -r
+  commit-info = show --no-patch --date=short --pretty=format:'%C(green)%ad%C(reset) %C(magenta)%C(italic)%<(20,trunc)%S%C(reset) %C(auto)%h %C(blue)%<(20,trunc)%an %C(auto)%<(70,trunc)%s%D%C(reset)'
+  rbc = rebase --continue
+
+  prune = fetch --prune
+  # Because I constantly forget how to do this
+  # https://git-scm.com/docs/git-fetch#git-fetch--p
+
+  # Show the diff between the latest commit and the current state
+  d = !"git diff-index --quiet HEAD -- || clear; git --no-pager diff --patch-with-stat"
+  glog = log --graph --abbrev-commit --decorate --all --format=format:\"%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(dim white) - %an%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n %C(white)%s%C(reset)\"
+  count   = !git shortlog -sn
+  pushf = push --force-with-lease
+
+[color]
+  diff = auto
+  status = auto
+  branch = auto
+  ui = always
+
+[core]
+  excludesfile = ~/.gitignore
+  quotepath = false
+  whitespace = trailing-space,space-before-tab
+  editor = nvim
+  ; pager = diffr | less -R
+
+[merge]
+  ff = only
+  # I pretty much never mean to do a real merge, since I use a rebase workflow.
+  # Note: this global option applies to all merges, including those done during a git pull
+  # https://git-scm.com/docs/git-config#git-config-mergeff
+
+  # conflictstyle = diff3
+  # Standard diff is two sets of final changes. This introduces the original text before each side's changes.
+  # https://git-scm.com/docs/git-config#git-config-mergeconflictStyle<Paste>
+  stat = true
+
+[branch]
+  # autosetupmerge = always
+  # autosetuprebase = always
+  # autosetupmerge = rebase
+
+[color "diff-highlight"]
+  oldNormal = "red bold"
+  oldHighlight = "red bold 52"
+  newNormal = "green bold"
+  newHighlight = "green bold 22"
+
+[push]
+  default = current
+  # "push the current branch back to the branch whose changes are usually integrated into the current branch"
+  # "refuse to push if the upstream branch’s name is different from the local one"
+  # https://git-scm.com/docs/git-config#git-config-pushdefault
+
+  followTags = true
+  autoSetupRemote = true
+  # Because I get sick of telling git to do it manually
+  # https://git-scm.com/docs/git-config#git-config-pushfollowTags
+
+[commit]
+  # gpgSign = true
+  # "other people can trust that the changes you've made really were made by you"
+  # https://help.github.com/articles/about-gpg/
+
+[rerere]
+  enabled = 1
+
+[hub]
+  protocol = https
+
+[help]
+  autocorrect = 1
+
+[diff]
+  # armin told me to
+  # https://blog.jcoglan.com/2017/09/19/the-patience-diff-algorithm/
+  algorithm = patience
+  submodule = log
+  compactionHeuristic = 1
+  colorMoved = default
+
+
+[status]
+  submoduleSummary = true
+
+[pull]
+  rebase = merges
+	default = current
+
+[pager]
+    diff = delta
+    log = delta
+    reflog = delta
+    show = delta
+
+[delta]
+  line-numbers = true
+
+    ; syntax-theme = Monokai Extended
+    ; navigate = true
+    ; commit-decoration-style = blue ol
+    ; commit-style = raw
+    ; file-style = omit
+    ; hunk-header-decoration-style = blue box
+    ; hunk-header-line-number-style = "#067a00"
+    ; hunk-header-style = file line-number syntax
+
+[interactive]
+  diffFilter = delta --color-only --features=interactive
+
+[rebase]
+  autostash = true
+  autosquash = true
+
+
+; [pull]
+	; rebase = true
+[init]
+	defaultBranch = main
+[user]
+	name = Billy Vong
+	email = billyvg@users.noreply.github.com

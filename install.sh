@@ -101,7 +101,7 @@ if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
   git clone --depth=1 https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
   ok "tpm"
   # Install the plugins non-interactively so a fresh box doesn't need <prefix>+I.
-  if "$HOME/.tmux/plugins/tpm/bin/install_plugins" >/dev/null 2>&1; then
+  if with_timeout 300 "$HOME/.tmux/plugins/tpm/bin/install_plugins" >/dev/null 2>&1; then
     ok "tmux plugins"
   else
     warn "tmux plugin install failed; run <prefix>+I inside tmux"
@@ -162,10 +162,14 @@ if has nvim; then
     warn "nvim $nvim_ver is too old for vim.pack (needs >= 0.12); skipping plugin sync"
   else
     info "syncing neovim plugins (first run builds treesitter + blink.cmp)"
-    if nvim --headless "+lua vim.pack.update(nil, { force = true })" +qa >/dev/null 2>&1; then
+    # vim.pack.add() in init.lua installs anything missing at startup; the
+    # update call then pulls the rest forward. 20min cap because a cold run
+    # compiles every treesitter parser and cargo-builds blink.cmp.
+    if with_timeout 1200 nvim --headless \
+         "+lua pcall(vim.pack.update, nil, { force = true })" +qa >/dev/null 2>&1; then
       ok "neovim plugins"
     else
-      warn "neovim plugin sync failed; open nvim and let it finish"
+      warn "neovim plugin sync did not finish; open nvim and let it complete"
     fi
   fi
 fi

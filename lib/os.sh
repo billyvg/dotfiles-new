@@ -38,6 +38,22 @@ is_coder() { [[ -n "${CODER_WORKSPACE_NAME:-}" || -n "${CODER_AGENT_URL:-}" ]]; 
 
 has() { command -v "$1" >/dev/null 2>&1; }
 
+# Run a command under a wall-clock limit, so an unattended `coder dotfiles` run
+# can't wedge forever on a step that decides to prompt (headless nvim and tpm
+# are the usual suspects). Falls back to running bare where timeout(1) is
+# absent, e.g. a stock macOS without coreutils.
+# usage: with_timeout <seconds> <cmd> [args...]
+with_timeout() {
+  local secs="$1"; shift
+  if has timeout; then
+    timeout --foreground "$secs" "$@"
+  elif has gtimeout; then
+    gtimeout --foreground "$secs" "$@"
+  else
+    "$@"
+  fi
+}
+
 # Run a command with sudo if we aren't root. Returns non-zero (rather than
 # hanging on a password prompt) when sudo isn't usable.
 SUDO=""

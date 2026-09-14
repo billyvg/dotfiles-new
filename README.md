@@ -29,6 +29,11 @@ git clone git@github.com:billyvg/dotfiles.git ~/.dotfiles-src
 `install.sh` is idempotent. Anything it would overwrite is moved to
 `<file>.bak` first, so re-running is safe.
 
+**Package failures never block config linking.** If apt or Homebrew fails — no
+network, a proxy, no sudo, an unsupported arch — you get a warning and the run
+continues, so you always end up with your shell config even on a box where the
+package install couldn't complete. Re-run `install.sh` once the cause is fixed.
+
 ## Layout
 
 ```

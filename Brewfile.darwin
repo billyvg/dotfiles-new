@@ -3,8 +3,6 @@
 
 cask_args appdir: "/Applications"
 
-tap "homebrew/bundle"
-
 brew "git"
 brew "wget"
 brew "tmux"
@@ -15,7 +13,6 @@ brew "viu"                          # terminal image viewer
 brew "node"
 brew "coreutils"                    # gls, so `ls --color` works like Linux
 brew "tailscale"
-brew "1password-cli"
 
 # Casks
 cask "ghostty"
@@ -23,12 +20,13 @@ cask "obsidian"
 cask "discord"
 cask "font-fira-code-nerd-font"
 cask "1password"
+cask "1password-cli"
 cask "firefox@developer-edition"
 cask "google-chrome"
 cask "slack"
 cask "chromedriver"
 cask "visual-studio-code"
-cask "whatsapp@beta"
+cask "whatsapp"
 
 ### Mac App Store ###
 brew "mas"

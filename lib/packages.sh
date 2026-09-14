@@ -114,7 +114,7 @@ run_brew_bundle() {
       continue
     fi
     info "brew bundle --file=$(basename "$f")"
-    if ! brew bundle --file="$f" --no-lock; then
+    if ! brew bundle --file="$f"; then
       warn "brew bundle failed for $(basename "$f") — continuing"
     fi
   done

@@ -97,6 +97,22 @@ neovim comes from brew rather than apt.
 First sync compiles tree-sitter parsers and builds `blink.cmp` with cargo, so
 it is slow once and fast after.
 
+## Clipboard
+
+`config/nvim/plugin/clipboard.lua` leaves nvim alone wherever a real clipboard
+tool exists (pbcopy on macOS; wl-copy/xclip/xsel with a display attached). On a
+headless box it falls back to **OSC 52**, so `"+y` reaches the clipboard of the
+terminal you're sitting at — through ssh and tmux, with nothing forwarded.
+
+`set -g set-clipboard on` in `.tmux.conf` is what lets that sequence through
+tmux to the outer terminal.
+
+Paste from `"+` is served from the unnamed register rather than a real OSC 52
+read: terminals refuse clipboard reads, and nvim's implementation stalls ~10s
+before giving up. Pasting *into* nvim from outside still works normally via
+your terminal's own paste. See the comments in that file to opt into real
+OSC 52 paste.
+
 ## Adding a new config
 
 - Goes in `$HOME`? Drop it in `home/`.

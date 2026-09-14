@@ -1,6 +1,12 @@
 .DS_Store
 *.bak
 
+# Karabiner-Elements rewrites karabiner.json through the directory symlink, so
+# edits made in its GUI land in this repo and show up in `git status` — which is
+# what we want. It also drops a timestamped copy into automatic_backups/ on
+# every change; that part is pure noise.
+config.darwin/karabiner/automatic_backups/
+
 # --- never commit credentials -------------------------------------------
 # This repo is meant to be public/shareable and is cloned onto dev boxes by
 # `coder dotfiles`. Machine-specific secrets belong in the untracked

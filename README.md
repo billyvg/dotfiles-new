@@ -46,6 +46,8 @@ Brewfile.darwin       # macOS-only: casks, mas, formulae
 Brewfile.linux        # Linux-only formulae
 home/                 # symlinked into $HOME
 config/               # symlinked into $XDG_CONFIG_HOME (~/.config)
+config.darwin/        # ...macOS only (terminal emulators, Karabiner)
+config.linux/         # ...Linux only
 macos/defaults.sh     # macOS system preferences (run manually)
 ```
 
@@ -61,6 +63,17 @@ Shared configs are one file. Anything platform-specific lives in a `.darwin` /
 
 `.tmux.conf` does its own detection with `if-shell "uname | grep -q Darwin"`
 and sources `~/.tmux-macos.conf` or `~/.tmux-linux.conf`.
+
+`~/.config` uses the same suffix, but at the *directory* level rather than by
+sourcing a fragment: `install.sh` links every subdirectory of `config/`, then
+every subdirectory of `config.$OS/`. A GUI app's config has nothing to merge —
+it's either present on this platform or it isn't — so there's no `.os`
+indirection here. Nothing in `config.darwin/` is created on a Linux box.
+
+This is where terminal emulators live. Ghostty, kitty and Alacritty all have
+Linux builds, but the dev boxes are headless and reached over SSH, so the
+terminal always runs on the Mac. If that ever changes, `git mv` the directory
+from `config.darwin/` to `config/`.
 
 Load order for zsh is: **shared → `.os` → `.local`**. Later wins.
 
@@ -164,6 +177,18 @@ OSC 52 paste.
 
 - Goes in `$HOME`? Drop it in `home/`.
 - Goes in `~/.config/foo`? Drop the directory in `config/foo`.
+- Only makes sense on one platform? Use `config.darwin/foo` or `config.linux/foo`.
 
 Either way it gets picked up automatically on the next `install.sh` — there is
 no manifest to update.
+
+### Configs the app itself rewrites
+
+`~/.config/<app>` is a symlink to a *directory*, so when an app rewrites its own
+config the new file lands inside this repo and shows up in `git status`. That is
+the intent — change kitty's theme with `kitten themes`, or remap a key in the
+Karabiner GUI, and the change is already staged for you to commit.
+
+The one thing to know: those edits are made on the machine, not by you in an
+editor, so they can sit uncommitted for a long time. `git status` in this repo
+is the only place they surface.

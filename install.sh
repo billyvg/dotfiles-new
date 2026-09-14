@@ -67,9 +67,17 @@ link "$DOTFILES/home/.gitconfig.$OS" "$HOME/.gitconfig.os"
 # ---------------------------------------------------------------------------
 info "linking ~/.config"
 
-for dir in "$DOTFILES"/config/*/; do
-  [[ -d "$dir" ]] || continue
-  link "${dir%/}" "$XDG_CONFIG_HOME/$(basename "${dir%/}")"
+# config/        — everything, every platform.
+# config.darwin/ — macOS only; config.linux/ — Linux only. Same `.darwin` /
+# `.linux` suffix convention as home/ and the Brewfiles. The OS directory is
+# linked second so that if both define the same app, the platform-specific one
+# wins (link() backs the first one up rather than silently dropping it).
+for base in "$DOTFILES/config" "$DOTFILES/config.$OS"; do
+  [[ -d "$base" ]] || continue
+  for dir in "$base"/*/; do
+    [[ -d "$dir" ]] || continue
+    link "${dir%/}" "$XDG_CONFIG_HOME/$(basename "${dir%/}")"
+  done
 done
 
 # ---------------------------------------------------------------------------

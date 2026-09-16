@@ -7,6 +7,13 @@
 # every change; that part is pure noise.
 config.darwin/karabiner/automatic_backups/
 
+# Same story for the configs linked in via config/: now that ~/.config/herdr
+# and ~/.config/nvim point here, these apps write their runtime state straight
+# into the repo. None of it describes the config, so none of it belongs in git.
+config/herdr/session.json
+config/herdr/.plugins.lock
+config/nvim/nvim-pack-lock.json
+
 # --- never commit credentials -------------------------------------------
 # This repo is meant to be public/shareable and is cloned onto dev boxes by
 # `coder dotfiles`. Machine-specific secrets belong in the untracked

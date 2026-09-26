@@ -12,6 +12,9 @@ config.darwin/karabiner/automatic_backups/
 # into the repo. None of it describes the config, so none of it belongs in git.
 config/herdr/session.json
 config/herdr/.plugins.lock
+config/herdr/release-notes.json
+config/herdr/*.log
+config/herdr/*.sock
 config/nvim/nvim-pack-lock.json
 
 # --- never commit credentials -------------------------------------------

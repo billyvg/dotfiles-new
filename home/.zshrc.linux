@@ -24,3 +24,7 @@ fi
 # systemd-less containers sometimes leave this unset, which upsets some tools.
 [[ -z "$XDG_RUNTIME_DIR" && -d "/run/user/$(id -u)" ]] && \
   export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+
+# Debian's /etc/zsh/zshrc enables keypad (smkx) mode, so arrows send ^[OA/^[OB
+bindkey '^[OA' history-substring-search-up
+bindkey '^[OB' history-substring-search-down

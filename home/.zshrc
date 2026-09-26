@@ -83,9 +83,19 @@ autoload -Uz compinit && compinit -C
 
 if [[ -f ~/.fzf.zsh ]]; then
   source ~/.fzf.zsh
-elif (( ${+commands[fzf]} )); then
+elif (( ${+commands[fzf]} )) && fzf --zsh &>/dev/null; then
   # fzf >= 0.48 ships its own shell integration
-  source <(fzf --zsh) 2>/dev/null
+  source <(fzf --zsh)
+else
+  # older fzf (e.g. Ubuntu's apt build): scripts ship in a distro-specific spot
+  for _fzf_dir in /usr/share/doc/fzf/examples /usr/share/fzf; do
+    if [[ -f $_fzf_dir/key-bindings.zsh ]]; then
+      source $_fzf_dir/key-bindings.zsh
+      [[ -f $_fzf_dir/completion.zsh ]] && source $_fzf_dir/completion.zsh
+      break
+    fi
+  done
+  unset _fzf_dir
 fi
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
@@ -138,7 +148,6 @@ alias pr="gh pr create --fill-first && gh pr view --web"
 alias prd="git push && gh pr create --fill-first --draft && gh pr view --web"
 alias vim=nvim
 alias vimconfig="nvim ~/.config/nvim/init.lua"
-alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 alias create_wt='~/.claude/create-worktree.sh'
 
 # The rest of my fun git aliases
@@ -174,8 +183,6 @@ export EDITOR='nvim'
 
 alias yarnconflict="git checkout origin/master -- yarn.lock && yarn"
 # can use `gh poi` instead
-alias gprunemerged='git checkout master && comm -12 <(git branch | sed "s/ *//g") <(git remote prune origin | sed "s/^.*origin\///g") | xargs -L1 -J % git branch -D %'
-alias gpm='git checkout main && comm -12 <(git branch | sed "s/ *//g") <(git remote prune origin | sed "s/^.*origin\///g") | xargs -L1 -J % git branch -D %'
 
 export NODE_OPTIONS=--max_old_space_size=8192
 export MANPAGER='nvim +Man!'

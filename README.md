@@ -70,10 +70,11 @@ every subdirectory of `config.$OS/`. A GUI app's config has nothing to merge —
 it's either present on this platform or it isn't — so there's no `.os`
 indirection here. Nothing in `config.darwin/` is created on a Linux box.
 
-This is where terminal emulators live. Ghostty, kitty and Alacritty all have
-Linux builds, but the dev boxes are headless and reached over SSH, so the
-terminal always runs on the Mac. If that ever changes, `git mv` the directory
-from `config.darwin/` to `config/`.
+This is where most terminal emulators live. kitty and Alacritty have Linux
+builds, but the dev boxes are headless and reached over SSH, so they only ever
+run on the Mac. Ghostty is the exception: it's also used on a Linux desktop, so
+it lives in `config/`. If another one changes, `git mv` the directory from
+`config.darwin/` to `config/`.
 
 Load order for zsh is: **shared → `.os` → `.local`**. Later wins.
 

@@ -182,7 +182,6 @@ export NEOVIM_JS_DEBUG=/tmp/nvim_js_debug
 export EDITOR='nvim'
 
 alias yarnconflict="git checkout origin/master -- yarn.lock && yarn"
-# can use `gh poi` instead
 
 export NODE_OPTIONS=--max_old_space_size=8192
 export MANPAGER='nvim +Man!'

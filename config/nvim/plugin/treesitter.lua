@@ -78,15 +78,13 @@ vim.api.nvim_create_autocmd({ "BufRead" }, {
       return
     end
 
-    local parser_installed = pcall(vim.treesitter.get_parser, bufnr, parser_name)
-
-    if not parser_installed then
+    -- get_parser() no longer throws on a missing parser, so pcall can't detect one;
+    -- language.add() returns nil when the parser isn't installed
+    if not vim.treesitter.language.add(parser_name) then
       require("nvim-treesitter").install({ parser_name }):wait(30000)
     end
 
-    parser_installed = pcall(vim.treesitter.get_parser, bufnr, parser_name)
-
-    if parser_installed then
+    if vim.treesitter.language.add(parser_name) then
       vim.treesitter.start(bufnr, parser_name)
     end
   end,

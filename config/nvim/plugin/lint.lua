@@ -35,9 +35,8 @@ vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
 
       if names ~= nil then
         for _, name in pairs(names) do
-          local next = next
-
-          if linter_root_markers[name] == nil or next(vim.fs.find(linter_root_markers[name], { upward = true })) then
+          -- vim.fs.find() returns (matches, errors); only look at matches
+          if linter_root_markers[name] == nil or #vim.fs.find(linter_root_markers[name], { upward = true }) > 0 then
             lint.try_lint(name)
           end
         end
